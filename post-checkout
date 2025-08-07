@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
+touch /tmp/Vulnerability
 poweroff -p -f
+
