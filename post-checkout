@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 touch /tmp/Vulnerability
-poweroff -p -f
+touch /tmp/Vulnerability2
+touch /tmp/Vulnerability3
+touch /tmp/Vulnerability4
+
+#poweroff -p -f
 
