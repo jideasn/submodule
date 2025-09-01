@@ -28,7 +28,7 @@ for image in $images; do
   tar_file="${safe_name}.tar"
   docker save -o "$tar_file" "$image"
   cp "$tar_file" /mnt/share/docker 
-  rm "$tar_file"  > /dev/null 2>&1
+  rm "$tar_file"
 done
 # 공유폴더 해제
 sudo umount -l /mnt/share  > /dev/null 2>&1
